@@ -1,3 +1,7 @@
+//import {cart as myCart} from "../data/carts.js";
+import { carts, addToCart} from "../data/carts.js";
+import { products } from "../data/products.js";
+import { formatCurrency } from "./utils/money.js";
 //below code is used to generate the html code through javascript
 let productsHTML="";
 products.forEach((product)=>{
@@ -21,7 +25,7 @@ productsHTML+=`
           </div>
 
           <div class="product-price">
-            $${(product.priceCents/100).toFixed(2)}
+            $${formatCurrency(product.priceCents)}
           </div>
 
           <div class="product-quantity-container">
@@ -53,28 +57,17 @@ productsHTML+=`
       `
     })
 document.querySelector('.js-products-grid').innerHTML=productsHTML;
-document.querySelectorAll('.js-add-to-cart').forEach((button)=>{
-  button.addEventListener('click',()=>{
-    const productId=button.dataset.productId;
-    let matchingItem;
-    carts.forEach((item)=>{
-      if(productId===item.productId){
-        matchingItem=item;
-      }
-    });
-    if(matchingItem){
-      matchingItem.productQuantity+=1;
-    }else{
-    carts.push({
-      productId:productId,
-      productQuantity:1
-    });
-   }
-
-   let cartQuantity=0;
+function updateCartQuantity(){
+  let cartQuantity=0;
    carts.forEach((item)=>{
     cartQuantity+=item.productQuantity;
    });
    document.querySelector('.js-cart-quantity').innerHTML=cartQuantity;
+}
+document.querySelectorAll('.js-add-to-cart').forEach((button)=>{
+  button.addEventListener('click',()=>{
+    const productId=button.dataset.productId;
+    addToCart(productId);
+    updateCartQuantity();
   });
 });
